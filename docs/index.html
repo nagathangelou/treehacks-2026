@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/styles.css" />
@@ -22,126 +22,106 @@
     <header class="site-header">
       <div class="container">
         <a class="logo" href="./">Serenity</a>
-        <div class="status-pill" id="statusPill">Demo window: 02:00</div>
+        <div class="status-pill" id="statusPill">Demo time remaining: 00:03</div>
       </div>
     </header>
 
     <main class="container app-shell">
-      <section class="hero-panel">
-        <p class="eyebrow">TreeHacks 2026</p>
-        <h1>Your life, scored in real time.</h1>
-        <p>
-          Serenity captures taste, watches context, then builds a personalized
-          soundtrack timeline tied to moments and moods.
-        </p>
-      </section>
-
-      <nav class="tabs" aria-label="Demo steps">
-        <button class="tab active" id="tab-setup" type="button">1. Setup</button>
-        <button class="tab" id="tab-video" type="button">2. Video Context</button>
-        <button class="tab" id="tab-timeline" type="button">3. Timeline</button>
-      </nav>
-
-      <section class="panel" id="setupStep" aria-labelledby="tab-setup">
-        <h2>Setup in under 30 seconds</h2>
-        <p class="helper">Name the demo user and capture music preferences.</p>
-
+      <section class="panel" id="setupStep">
         <form id="setupForm" class="setup-form">
-          <label>
-            Demo user name
-            <input
-              type="text"
-              id="userName"
-              name="userName"
-              placeholder="e.g. Maya Chen"
-              required
-            />
-          </label>
+          <div class="setup-carousel" id="setupCarousel">
+            <div class="setup-track" id="setupTrack" data-pane="0">
+              <div class="setup-pane setup-pane-name" data-pane="0">
+                <label class="demo-name-label">
+                  Demo user name
+                  <input
+                    type="text"
+                    id="userName"
+                    name="userName"
+                    placeholder="e.g. Maya Chen"
+                    required
+                  />
+                </label>
+              </div>
 
-          <fieldset>
-            <legend>Music taste capture</legend>
-            <label class="option">
-              <input type="radio" name="captureMethod" value="spotify" checked />
-              Connect via Spotify link
-            </label>
-            <label class="option">
-              <input type="radio" name="captureMethod" value="questions" />
-              Quick yes/no taste questions
-            </label>
-          </fieldset>
+              <div class="setup-pane" data-pane="1">
+                <div id="spotifyBlock">
+                  <label>
+                    Connect via Spotify link
+                    <input
+                      type="url"
+                      id="spotifyLink"
+                      name="spotifyLink"
+                      placeholder="https://open.spotify.com/..."
+                    />
+                  </label>
+                </div>
 
-          <div id="spotifyBlock">
-            <label>
-              Spotify profile or playlist link
-              <input
-                type="url"
-                id="spotifyLink"
-                name="spotifyLink"
-                placeholder="https://open.spotify.com/..."
-              />
-            </label>
+                <div id="questionBlock">
+                  <p class="question-title">Or</p>
+                  <div class="taste-grid" id="tasteGrid" role="group" aria-label="Music preferences">
+                    <button class="taste-card" type="button" data-taste="today-top-hits-pop" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Today's Top Hits (Pop)</span></button>
+                    <button class="taste-card" type="button" data-taste="rapcaviar-hiphop" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">RapCaviar (Hip-Hop)</span></button>
+                    <button class="taste-card" type="button" data-taste="mint-edm-electronic" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">mint (EDM / Electronic)</span></button>
+                    <button class="taste-card" type="button" data-taste="lofi-beats-chill" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">lofi beats (Chill)</span></button>
+                    <button class="taste-card" type="button" data-taste="indie-mixtape-alt" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Indie Mixtape (Alt-Indie)</span></button>
+                    <button class="taste-card" type="button" data-taste="viva-latino-reggaeton" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Viva Latino (Latin / Reggaeton)</span></button>
+                    <button class="taste-card" type="button" data-taste="all-out-2000s-nostalgia" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">All Out 2000s (Nostalgia)</span></button>
+                    <button class="taste-card" type="button" data-taste="jazz-vibes-soul" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Jazz Vibes (Jazz / Neo-Soul)</span></button>
+                    <button class="taste-card" type="button" data-taste="peaceful-piano-ambient" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Peaceful Piano (Ambient)</span></button>
+                    <button class="taste-card" type="button" data-taste="rock-classics-rock" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Rock Classics (Classic Rock)</span></button>
+                    <button class="taste-card" type="button" data-taste="beast-mode-workout" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Beast Mode (Workout)</span></button>
+                    <button class="taste-card" type="button" data-taste="anti-pop-mainstream" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">anti pop (Hyper/Alt Pop)</span></button>
+                    <button class="taste-card" type="button" data-taste="deep-house-relax" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Deep House Relax (Deep House)</span></button>
+                    <button class="taste-card" type="button" data-taste="chill-rnb-rnb" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Chill R&B (R&B)</span></button>
+                    <button class="taste-card" type="button" data-taste="punk-unplugged-punk" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Punk Unplugged (Punk/Acoustic)</span></button>
+                    <button class="taste-card" type="button" data-taste="classical-essentials-classical" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Classical Essentials (Classical)</span></button>
+                    <button class="taste-card" type="button" data-taste="afrobeats-now-afrobeats" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Afrobeats Now (Afrobeats)</span></button>
+                    <button class="taste-card" type="button" data-taste="k-pop-on-kpop" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">K-Pop ON! (K-Pop)</span></button>
+                    <button class="taste-card" type="button" data-taste="folk-acoustic-sunday" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Folk Acoustic Sunday (Folk)</span></button>
+                    <button class="taste-card" type="button" data-taste="sad-indie-rainy" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Sad Indie Rainy Day (Melancholic Indie)</span></button>
+                    <button class="taste-card" type="button" data-taste="drill-essentials-uk" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Drill Essentials (UK/NY Drill)</span></button>
+                    <button class="taste-card" type="button" data-taste="night-drive-synthwave" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Night Drive (Synthwave)</span></button>
+                    <button class="taste-card" type="button" data-taste="phonk-heat-underground" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Phonk Heat (Underground)</span></button>
+                    <button class="taste-card" type="button" data-taste="soul-coffeehouse" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Soul Coffeehouse (Soul)</span></button>
+                    <button class="taste-card" type="button" data-taste="country-roads-modern" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Country Roads (Modern Country)</span></button>
+                    <button class="taste-card" type="button" data-taste="metalcore-breakdowns" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Metalcore Breakdowns (Metalcore)</span></button>
+                    <button class="taste-card" type="button" data-taste="anime-openings-jpop" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">Anime Openings (J-Pop/Rock)</span></button>
+                    <button class="taste-card" type="button" data-taste="house-party-throwbacks" aria-pressed="false"><span class="taste-disc" aria-hidden="true"></span><span class="taste-label">House Party Throwbacks (Party)</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <div id="questionBlock" class="hidden">
-            <p class="question-title">Rapid taste questions</p>
-            <label class="option">
-              <input type="checkbox" name="taste" value="cinematic" />
-              I like cinematic / ambient soundscapes.
-            </label>
-            <label class="option">
-              <input type="checkbox" name="taste" value="energetic" />
-              I prefer energetic, high-tempo songs.
-            </label>
-            <label class="option">
-              <input type="checkbox" name="taste" value="lyrics" />
-              I want clear lyrics over instrumental focus.
-            </label>
-          </div>
-
-          <button class="btn btn-primary" type="submit">Continue to Video</button>
           <p id="setupMessage" class="form-message" role="status"></p>
         </form>
       </section>
 
-      <section class="panel hidden" id="videoStep" aria-labelledby="tab-video">
-        <h2>Context video + live generation</h2>
-        <p class="helper">
-          Start the clip. When playback ends, Serenity auto-switches to Timeline.
-        </p>
-
+      <section class="panel hidden" id="videoStep">
         <div class="video-frame">
-          <video id="contextVideo" controls preload="metadata">
+          <video id="contextVideo" preload="metadata" playsinline>
             <source src="assets/video/serenity-demo.mp4" type="video/mp4" />
             Your browser does not support the video element.
           </video>
         </div>
-
-        <div class="video-actions">
-          <button class="btn btn-primary" id="startVideoBtn" type="button">Play Video</button>
-          <button class="btn btn-secondary" id="skipBtn" type="button">Skip to Timeline</button>
-        </div>
-
-        <p class="pipeline-note">
-          External pipeline status: <span id="pipelineStatus">Waiting for playback...</span>
-        </p>
       </section>
 
-      <section class="panel hidden" id="timelineStep" aria-labelledby="tab-timeline">
+      <section class="panel hidden" id="timelineStep">
         <div class="timeline-head">
           <h2 id="timelineTitle">Timeline</h2>
-          <button class="btn btn-secondary" id="resetBtn" type="button">Run Demo Again</button>
         </div>
-        <p class="helper">
-          Songs generated by Suno appear as memory snapshots with mood signals.
-        </p>
 
         <div id="timelineList" class="timeline" aria-live="polite"></div>
       </section>
+
+      <div class="nav-clicks" id="navClicks" aria-label="Navigation controls">
+        <button class="btn btn-secondary" id="navLeftBtn" type="button">Left</button>
+        <button class="btn btn-primary" id="navRightBtn" type="button">Right</button>
+      </div>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>Serenity demo website for immersive personalized soundtracks.</p>
         <a href="pages/privacy.html">Privacy</a>
       </div>
     </footer>
