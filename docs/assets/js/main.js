@@ -51,7 +51,7 @@
 
   let demoUser = "Demo User";
   let setupPane = 0;
-  let secondsLeft = 3;
+  let secondsLeft = 120;
   let hasTransitionedToTimeline = false;
 
   let countdownId;
@@ -299,7 +299,7 @@
   function resetDemoToSetup() {
     demoUser = "Demo User";
     hasTransitionedToTimeline = false;
-    secondsLeft = 3;
+    secondsLeft = 120;
     clearInterval(countdownId);
     clearVideoTransitionTimeout();
     setupForm.reset();
