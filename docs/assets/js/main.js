@@ -15,6 +15,7 @@
   const statusPill = document.getElementById("statusPill");
   const timelineTitle = document.getElementById("timelineTitle");
   const timelineList = document.getElementById("timelineList");
+  const navArrows = document.getElementById("navArrows");
   const navLeftBtn = document.getElementById("navLeftBtn");
   const navRightBtn = document.getElementById("navRightBtn");
 
@@ -44,7 +45,9 @@
   ];
 
   const SWIPE_THRESHOLD = 55;
-  const WHEEL_THRESHOLD = 90;
+  const WHEEL_THRESHOLD = 48;
+  const NAV_IDLE_MS = 2600;
+  const NAV_EDGE_ACTIVATE_PX = 180;
 
   let demoUser = "Demo User";
   let setupPane = 0;
@@ -58,22 +61,19 @@
   let setupTouchStartY = null;
   let setupPointerStartX = null;
   let setupPointerStartY = null;
-  let setupWheelAccum = 0;
-  let setupWheelResetId;
 
   let videoTouchStartX = null;
   let videoTouchStartY = null;
   let videoPointerStartX = null;
   let videoPointerStartY = null;
-  let videoWheelAccum = 0;
-  let videoWheelResetId;
 
   let timelineTouchStartX = null;
   let timelineTouchStartY = null;
   let timelinePointerStartX = null;
   let timelinePointerStartY = null;
-  let timelineWheelAccum = 0;
-  let timelineWheelResetId;
+  let globalWheelAccum = 0;
+  let globalWheelResetId;
+  let navIdleTimeoutId;
 
   function formatTime(totalSeconds) {
     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
@@ -88,6 +88,35 @@
   function clearVideoTransitionTimeout() {
     clearTimeout(videoTransitionTimeoutId);
     videoTransitionTimeoutId = undefined;
+  }
+
+  function scheduleNavIdle() {
+    clearTimeout(navIdleTimeoutId);
+    navIdleTimeoutId = window.setTimeout(() => {
+      navArrows.classList.add("is-idle");
+    }, NAV_IDLE_MS);
+  }
+
+  function isVideoActive() {
+    return !videoStep.classList.contains("hidden");
+  }
+
+  function syncArrowVisibilityForStep() {
+    clearTimeout(navIdleTimeoutId);
+    navArrows.classList.remove("is-video-step");
+    navArrows.classList.remove("is-idle");
+    if (isVideoActive()) {
+      navArrows.classList.add("is-video-step");
+      scheduleNavIdle();
+    }
+  }
+
+  function showNavArrows() {
+    clearTimeout(navIdleTimeoutId);
+    navArrows.classList.remove("is-idle");
+    if (isVideoActive()) {
+      scheduleNavIdle();
+    }
   }
 
   async function playContextVideo() {
@@ -107,12 +136,20 @@
   }
 
   function canAdvanceFromName() {
-    if (!userNameInput.value.trim()) {
+    if (!hasDemoName()) {
       setupMessage.textContent = "Please add a demo user name.";
       userNameInput.focus();
       return false;
     }
     return true;
+  }
+
+  function hasDemoName() {
+    return Boolean(userNameInput.value.trim());
+  }
+
+  function hasTasteSelectionOrSpotify() {
+    return Boolean(spotifyLinkInput.value.trim()) || selectedTasteValues().length > 0;
   }
 
   function selectedTasteValues() {
@@ -179,6 +216,7 @@
       setupStep.classList.remove("hidden");
       setStatus(`Demo time remaining: ${formatTime(secondsLeft)}`);
       updateNavButtons();
+      syncArrowVisibilityForStep();
       return;
     }
 
@@ -191,12 +229,14 @@
       }, Math.max(1000, secondsLeft * 1000));
       playContextVideo();
       updateNavButtons();
+      syncArrowVisibilityForStep();
       return;
     }
 
     timelineStep.classList.remove("hidden");
     setStatus(`Complete: ${formatTime(secondsLeft)} remaining`);
     updateNavButtons();
+    syncArrowVisibilityForStep();
   }
 
   function startCountdown() {
@@ -278,7 +318,11 @@
   function updateNavButtons() {
     if (!setupStep.classList.contains("hidden")) {
       navLeftBtn.disabled = setupPane === 0;
-      navRightBtn.disabled = false;
+      if (setupPane === 0) {
+        navRightBtn.disabled = !hasDemoName();
+      } else {
+        navRightBtn.disabled = !hasTasteSelectionOrSpotify();
+      }
       return;
     }
 
@@ -306,6 +350,32 @@
   function goBackToVideoFromTimeline() {
     hasTransitionedToTimeline = false;
     goToStep("video");
+  }
+
+  function activeStepId() {
+    if (!setupStep.classList.contains("hidden")) {
+      return "setup";
+    }
+    if (!videoStep.classList.contains("hidden")) {
+      return "video";
+    }
+    return "timeline";
+  }
+
+  function handleHorizontalNav(diffX) {
+    const currentStep = activeStepId();
+
+    if (currentStep === "setup") {
+      handleSetupHorizontal(diffX, 0);
+      return;
+    }
+
+    if (currentStep === "video") {
+      handleVideoHorizontal(diffX, 0);
+      return;
+    }
+
+    handleTimelineHorizontal(diffX, 0);
   }
 
   function handleSetupHorizontal(diffX, diffY) {
@@ -370,6 +440,14 @@
         updateNavButtons();
       }
     }
+  });
+
+  userNameInput.addEventListener("input", () => {
+    updateNavButtons();
+  });
+
+  spotifyLinkInput.addEventListener("input", () => {
+    updateNavButtons();
   });
 
   navLeftBtn.addEventListener("click", () => {
@@ -454,32 +532,6 @@
     handleSetupHorizontal(diffX, diffY);
   });
 
-  setupCarousel.addEventListener(
-    "wheel",
-    (event) => {
-      if (setupStep.classList.contains("hidden")) {
-        return;
-      }
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
-        return;
-      }
-      event.preventDefault();
-      setupWheelAccum += event.deltaX;
-      clearTimeout(setupWheelResetId);
-      setupWheelResetId = window.setTimeout(() => {
-        setupWheelAccum = 0;
-      }, 220);
-
-      if (setupWheelAccum > WHEEL_THRESHOLD) {
-        setupWheelAccum = 0;
-        handleSetupHorizontal(100, 0);
-      } else if (setupWheelAccum < -WHEEL_THRESHOLD) {
-        setupWheelAccum = 0;
-        handleSetupHorizontal(-100, 0);
-      }
-    },
-    { passive: false }
-  );
 
   videoStep.addEventListener(
     "touchstart",
@@ -521,32 +573,6 @@
     handleVideoHorizontal(diffX, diffY);
   });
 
-  videoStep.addEventListener(
-    "wheel",
-    (event) => {
-      if (videoStep.classList.contains("hidden")) {
-        return;
-      }
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
-        return;
-      }
-      event.preventDefault();
-      videoWheelAccum += event.deltaX;
-      clearTimeout(videoWheelResetId);
-      videoWheelResetId = window.setTimeout(() => {
-        videoWheelAccum = 0;
-      }, 220);
-
-      if (videoWheelAccum > WHEEL_THRESHOLD) {
-        videoWheelAccum = 0;
-        goToTimelineFromVideo();
-      } else if (videoWheelAccum < -WHEEL_THRESHOLD) {
-        videoWheelAccum = 0;
-        goBackToSetupFromVideo();
-      }
-    },
-    { passive: false }
-  );
 
   timelineStep.addEventListener(
     "touchstart",
@@ -588,31 +614,41 @@
     handleTimelineHorizontal(diffX, diffY);
   });
 
-  timelineStep.addEventListener(
+  window.addEventListener(
     "wheel",
     (event) => {
-      if (timelineStep.classList.contains("hidden")) {
-        return;
-      }
       if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
         return;
       }
       event.preventDefault();
-      timelineWheelAccum += event.deltaX;
-      clearTimeout(timelineWheelResetId);
-      timelineWheelResetId = window.setTimeout(() => {
-        timelineWheelAccum = 0;
+      showNavArrows();
+      globalWheelAccum += event.deltaX;
+      clearTimeout(globalWheelResetId);
+      globalWheelResetId = window.setTimeout(() => {
+        globalWheelAccum = 0;
       }, 220);
 
-      if (timelineWheelAccum > WHEEL_THRESHOLD) {
-        timelineWheelAccum = 0;
-        resetDemoToSetup();
-      } else if (timelineWheelAccum < -WHEEL_THRESHOLD) {
-        timelineWheelAccum = 0;
-        goBackToVideoFromTimeline();
+      if (globalWheelAccum > WHEEL_THRESHOLD) {
+        globalWheelAccum = 0;
+        handleHorizontalNav(100);
+      } else if (globalWheelAccum < -WHEEL_THRESHOLD) {
+        globalWheelAccum = 0;
+        handleHorizontalNav(-100);
       }
     },
     { passive: false }
+  );
+
+  window.addEventListener(
+    "mousemove",
+    (event) => {
+      const nearLeft = event.clientX <= NAV_EDGE_ACTIVATE_PX;
+      const nearRight = event.clientX >= window.innerWidth - NAV_EDGE_ACTIVATE_PX;
+      if (nearLeft || nearRight) {
+        showNavArrows();
+      }
+    },
+    { passive: true }
   );
 
   tasteGrid.addEventListener("click", (event) => {
@@ -628,6 +664,7 @@
 
     card.classList.toggle("active");
     card.setAttribute("aria-pressed", String(card.classList.contains("active")));
+    updateNavButtons();
   });
 
   setupForm.addEventListener("submit", (event) => {
@@ -661,4 +698,5 @@
   showSetupPane(0);
   goToStep("setup");
   updateNavButtons();
+  syncArrowVisibilityForStep();
 })();

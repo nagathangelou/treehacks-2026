@@ -19,6 +19,7 @@
 html,
 body {
   height: 100%;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -30,6 +31,8 @@ body {
   color: var(--text);
   background: #dff2ff;
   overscroll-behavior-x: contain;
+  overflow-x: hidden;
+  overflow: hidden;
 }
 
 body::before {
@@ -156,8 +159,10 @@ body::before {
 
 .app-shell {
   flex: 1;
-  width: min(1080px, 92%);
+  width: 100%;
+  max-width: none;
   padding: 1.4rem 0 1rem;
+  overflow: hidden;
 }
 
 .hero-panel {
@@ -254,6 +259,11 @@ p {
   box-shadow: none;
   padding-left: 0;
   padding-right: 0;
+  height: calc(100vh - 210px);
+  overflow: hidden;
+  width: min(1080px, 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #spotifyBlock label {
@@ -287,22 +297,30 @@ p {
 .setup-carousel {
   overflow: hidden;
   perspective: 1200px;
+  height: calc(100vh - 185px);
+  min-height: 440px;
+  position: relative;
+  isolation: isolate;
 }
 
 .setup-track {
   --setup-pane: 0;
   display: flex;
   width: 100%;
-  transform: translateX(calc(var(--setup-pane) * -100%));
+  height: 100%;
+  transform: translate3d(calc(var(--setup-pane) * -100%), 0, 0);
   transition: transform 460ms cubic-bezier(0.22, 0.7, 0.2, 1);
+  will-change: transform;
 }
 
 .setup-pane {
   width: 100%;
   flex: 0 0 100%;
+  height: 100%;
   opacity: 0.35;
   transform-origin: center;
   transition: transform 460ms cubic-bezier(0.22, 0.7, 0.2, 1), opacity 420ms ease;
+  backface-visibility: hidden;
 }
 
 .setup-track[data-pane="0"] .setup-pane[data-pane="0"],
@@ -312,11 +330,41 @@ p {
 }
 
 .setup-track[data-pane="0"] .setup-pane[data-pane="1"] {
-  transform: rotateY(-18deg) scale(0.94);
+  transform: translateX(4%) scale(0.97);
 }
 
 .setup-track[data-pane="1"] .setup-pane[data-pane="0"] {
-  transform: rotateY(18deg) scale(0.94);
+  transform: translateX(-4%) scale(0.97);
+}
+
+.setup-pane[data-pane="0"] {
+  overflow: hidden;
+}
+
+.setup-pane[data-pane="1"] {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#spotifyBlock {
+  flex: 0 0 auto;
+}
+
+#questionBlock {
+  flex: 1;
+  display: grid;
+  grid-template-rows: minmax(0, 0.225fr) auto minmax(0, 0.225fr) auto;
+}
+
+#questionBlock .question-title {
+  grid-row: 2;
+  margin: 0;
+}
+
+#questionBlock .taste-grid {
+  grid-row: 4;
+  margin-top: -3.75rem;
 }
 
 .setup-pane-actions {
@@ -328,7 +376,8 @@ p {
 }
 
 .setup-pane-name {
-  min-height: clamp(280px, 44vh, 430px);
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -345,10 +394,7 @@ p {
   line-height: 1.05;
   letter-spacing: 0.03em;
   color: #ffffff;
-  text-shadow:
-    0 0 4px rgba(255, 255, 255, 0.95),
-    0 0 14px rgba(157, 225, 255, 0.92),
-    0 0 28px rgba(59, 130, 246, 0.65);
+  text-shadow: none;
 }
 
 .demo-name-label input[type="text"] {
@@ -369,64 +415,108 @@ legend,
 
 .taste-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 5.6rem;
+  row-gap: 1.45rem;
+  width: min(1080px, 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .taste-card {
   --disc-accent: #3b82f6;
   --disc-image: none;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  border: 1px solid rgba(12, 42, 77, 0.2);
-  background: rgba(255, 255, 255, 0.85);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.5rem;
+  border: none;
+  background: none;
   color: #0f2b4d;
-  border-radius: 0.9rem;
-  padding: 0.56rem 0.58rem;
+  border-radius: 0;
+  padding: 0.3rem 0.18rem 0.24rem;
+  min-height: 0;
+  aspect-ratio: auto;
   font-family: inherit;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
-  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+  transition: transform 140ms ease, opacity 140ms ease;
 }
 
 .taste-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(19, 137, 255, 0.42);
+  opacity: 0.92;
 }
 
 .taste-card.active {
   color: #062748;
-  border-color: rgba(19, 137, 255, 0.6);
-  background: linear-gradient(102deg, rgba(19, 137, 255, 0.24), rgba(0, 214, 161, 0.24));
-  box-shadow: 0 8px 18px rgba(19, 137, 255, 0.22);
+  opacity: 1;
+  transform: translateY(-1px) scale(1);
+}
+
+.taste-card.active::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(222, 240, 255, 0.82) 36%, rgba(222, 240, 255, 0.22) 64%, rgba(222, 240, 255, 0) 100%);
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .taste-disc {
-  width: 42px;
-  min-width: 42px;
-  height: 42px;
+  width: 120px;
+  min-width: 120px;
+  height: 120px;
+  margin: 0;
   border-radius: 50%;
   position: relative;
-  background:
-    radial-gradient(circle at center, rgba(0, 0, 0, 0) 0 58%, rgba(0, 0, 0, 0.72) 59% 100%),
-    var(--disc-image),
-    radial-gradient(circle at center, #eceff5 0 15%, #131927 16% 22%, transparent 23%),
-    repeating-radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
-    linear-gradient(145deg, #161c2a, #080c15);
+  background: var(--disc-image), #0a0a0a;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 18px color-mix(in srgb, var(--disc-accent) 50%, transparent);
-  animation: recordSpin 2.4s linear infinite;
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.34),
+    0 0 0 1px rgba(255, 255, 255, 0.38),
+    0 0 36px rgba(255, 255, 255, 0.78),
+    0 0 88px rgba(255, 255, 255, 0.52),
+    0 0 140px rgba(255, 255, 255, 0.34);
+  animation: recordSpin 8s linear infinite;
+  overflow: hidden;
+  z-index: 1;
+  transition: width 260ms cubic-bezier(0.2, 0.75, 0.2, 1), height 260ms cubic-bezier(0.2, 0.75, 0.2, 1), min-width 260ms cubic-bezier(0.2, 0.75, 0.2, 1), margin 260ms cubic-bezier(0.2, 0.75, 0.2, 1), box-shadow 300ms ease-out;
+}
+
+.taste-disc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 0 41%, #000000 42% 100%),
+    repeating-radial-gradient(circle at center, rgba(0, 0, 0, 0) 42% 44.6%, rgba(255, 255, 255, 0.11) 44.72% 44.92%, rgba(0, 0, 0, 0) 45.08% 47.4%),
+    repeating-radial-gradient(circle at center, rgba(0, 0, 0, 0) 43% 46.2%, rgba(255, 255, 255, 0.06) 46.3% 46.42%, rgba(0, 0, 0, 0) 46.54% 49%),
+    conic-gradient(
+      from 220deg at 50% 50%,
+      rgba(255, 255, 255, 0.18) 0deg 15deg,
+      rgba(255, 255, 255, 0) 15deg 126deg,
+      rgba(255, 255, 255, 0.1) 126deg 143deg,
+      rgba(255, 255, 255, 0) 146deg 360deg
+    );
+  pointer-events: none;
 }
 
 .taste-disc::after {
   content: "";
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   inset: 0;
   margin: auto;
@@ -435,28 +525,68 @@ legend,
 }
 
 .taste-label {
-  line-height: 1.2;
-  font-size: 0.83rem;
+  line-height: 1.14;
+  font-size: 0.96rem;
+  max-width: 144px;
+  font-weight: 700;
 }
 
-.taste-card[data-taste="today-top-hits-pop"] { --disc-accent: #ff6b7a; --disc-image: url("../images/genres/today-top-hits-pop.jpg"); }
-.taste-card[data-taste="rapcaviar-hiphop"] { --disc-accent: #8b9bb7; --disc-image: url("../images/genres/rapcaviar-hiphop.jpg"); }
-.taste-card[data-taste="mint-edm-electronic"] { --disc-accent: #00c2ff; --disc-image: url("../images/genres/mint-edm-electronic.jpg"); }
+.taste-card.active .taste-disc {
+  width: 90px;
+  min-width: 90px;
+  height: 90px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  box-shadow:
+    inset 0 0 16px rgba(255, 255, 255, 0.62),
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 56px rgba(255, 255, 255, 0.98),
+    0 0 120px rgba(255, 255, 255, 0.84),
+    0 0 190px rgba(255, 255, 255, 0.62),
+    0 0 280px rgba(255, 255, 255, 0.4);
+}
+
+.taste-card.active .taste-disc::before {
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 0 41%, #000000 42% 100%),
+    repeating-radial-gradient(circle at center, rgba(0, 0, 0, 0) 42% 45%, rgba(255, 255, 255, 0.28) 45.2% 45.8%, rgba(0, 0, 0, 0) 46% 49.5%);
+}
+
+.taste-card.active .taste-label {
+  color: #04244a;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--disc-accent) 42%, transparent);
+  position: relative;
+  z-index: 1;
+}
+
+.taste-card[data-taste="today-top-hits-pop"] { --disc-accent: #ff6b7a; --disc-image: url("../images/genres/today-top-hits-pop.svg"); }
+.taste-card[data-taste="rapcaviar-hiphop"] { --disc-accent: #8b9bb7; --disc-image: url("../images/genres/rapcaviar-hiphop.svg"); }
+.taste-card[data-taste="mint-edm-electronic"] { --disc-accent: #00c2ff; --disc-image: url("../images/genres/mint-edm-electronic.svg"); }
 .taste-card[data-taste="lofi-beats-chill"] { --disc-accent: #a78bfa; --disc-image: url("../images/genres/lofi-beats-chill.jpg"); }
-.taste-card[data-taste="indie-mixtape-alt"] { --disc-accent: #f59e0b; --disc-image: url("../images/genres/indie-mixtape-alt.jpg"); }
-.taste-card[data-taste="viva-latino-reggaeton"] { --disc-accent: #fb7185; --disc-image: url("../images/genres/viva-latino-reggaeton.jpg"); }
-.taste-card[data-taste="all-out-2000s-nostalgia"] { --disc-accent: #84cc16; --disc-image: url("../images/genres/all-out-2000s-nostalgia.jpg"); }
-.taste-card[data-taste="jazz-vibes-soul"] { --disc-accent: #14b8a6; --disc-image: url("../images/genres/jazz-vibes-soul.jpg"); }
-.taste-card[data-taste="peaceful-piano-ambient"] { --disc-accent: #94a3b8; --disc-image: url("../images/genres/peaceful-piano-ambient.jpg"); }
-.taste-card[data-taste="rock-classics-rock"] { --disc-accent: #ef4444; --disc-image: url("../images/genres/rock-classics-rock.jpg"); }
-.taste-card[data-taste="beast-mode-workout"] { --disc-accent: #f97316; --disc-image: url("../images/genres/beast-mode-workout.jpg"); }
-.taste-card[data-taste="anti-pop-mainstream"] { --disc-accent: #f43f5e; --disc-image: url("../images/genres/anti-pop-mainstream.jpg"); }
-.taste-card[data-taste="deep-house-relax"] { --disc-accent: #38bdf8; --disc-image: url("../images/genres/deep-house-relax.jpg"); }
-.taste-card[data-taste="chill-rnb-rnb"] { --disc-accent: #4f46e5; --disc-image: url("../images/genres/chill-rnb-rnb.jpg"); }
-.taste-card[data-taste="punk-unplugged-punk"] { --disc-accent: #71717a; --disc-image: url("../images/genres/punk-unplugged-punk.jpg"); }
-.taste-card[data-taste="classical-essentials-classical"] { --disc-accent: #ca8a04; --disc-image: url("../images/genres/classical-essentials-classical.jpg"); }
-.taste-card[data-taste="afrobeats-now-afrobeats"] { --disc-accent: #22c55e; --disc-image: url("../images/genres/afrobeats-now-afrobeats.jpg"); }
-.taste-card[data-taste="k-pop-on-kpop"] { --disc-accent: #c026d3; --disc-image: url("../images/genres/k-pop-on-kpop.jpg"); }
+.taste-card[data-taste="indie-mixtape-alt"] { --disc-accent: #f59e0b; --disc-image: url("../images/genres/indie-mixtape-alt.svg"); }
+.taste-card[data-taste="viva-latino-reggaeton"] { --disc-accent: #fb7185; --disc-image: url("../images/genres/viva-latino-reggaeton.svg"); }
+.taste-card[data-taste="all-out-2000s-nostalgia"] { --disc-accent: #84cc16; --disc-image: url("../images/genres/all-out-2000s-nostalgia.svg"); }
+.taste-card[data-taste="jazz-vibes-soul"] { --disc-accent: #14b8a6; --disc-image: url("../images/genres/jazz-vibes-soul.svg"); }
+.taste-card[data-taste="peaceful-piano-ambient"] { --disc-accent: #94a3b8; --disc-image: url("../images/genres/peaceful-piano-ambient.svg"); }
+.taste-card[data-taste="rock-classics-rock"] { --disc-accent: #ef4444; --disc-image: url("../images/genres/rock-classics-rock.svg"); }
+.taste-card[data-taste="beast-mode-workout"] { --disc-accent: #f97316; --disc-image: url("../images/genres/beast-mode-workout.svg"); }
+.taste-card[data-taste="anti-pop-mainstream"] { --disc-accent: #f43f5e; --disc-image: url("../images/genres/anti-pop-mainstream.svg"); }
+.taste-card[data-taste="deep-house-relax"] { --disc-accent: #38bdf8; --disc-image: url("../images/genres/deep-house-relax.svg"); }
+.taste-card[data-taste="chill-rnb-rnb"] { --disc-accent: #4f46e5; --disc-image: url("../images/genres/chill-rnb-rnb.svg"); }
+.taste-card[data-taste="punk-unplugged-punk"] { --disc-accent: #71717a; --disc-image: url("../images/genres/punk-unplugged-punk.svg"); }
+.taste-card[data-taste="classical-essentials-classical"] { --disc-accent: #ca8a04; --disc-image: url("../images/genres/classical-essentials-classical.svg"); }
+.taste-card[data-taste="afrobeats-now-afrobeats"] { --disc-accent: #22c55e; --disc-image: url("../images/genres/afrobeats-now-afrobeats.svg"); }
+.taste-card[data-taste="k-pop-on-kpop"] { --disc-accent: #c026d3; --disc-image: url("../images/genres/k-pop-on-kpop.svg"); }
+.taste-card[data-taste="folk-acoustic-sunday"] { --disc-accent: #10b981; --disc-image: url("../images/genres/folk-acoustic-sunday.svg"); }
+.taste-card[data-taste="sad-indie-rainy"] { --disc-accent: #6366f1; --disc-image: url("../images/genres/sad-indie-rainy.svg"); }
+.taste-card[data-taste="drill-essentials-uk"] { --disc-accent: #64748b; --disc-image: url("../images/genres/drill-essentials-uk.svg"); }
+.taste-card[data-taste="night-drive-synthwave"] { --disc-accent: #a855f7; --disc-image: url("../images/genres/night-drive-synthwave.svg"); }
+.taste-card[data-taste="phonk-heat-underground"] { --disc-accent: #ef4444; --disc-image: url("../images/genres/phonk-heat-underground.svg"); }
+.taste-card[data-taste="soul-coffeehouse"] { --disc-accent: #b45309; --disc-image: url("../images/genres/soul-coffeehouse.svg"); }
+.taste-card[data-taste="country-roads-modern"] { --disc-accent: #f59e0b; --disc-image: url("../images/genres/country-roads-modern.svg"); }
+.taste-card[data-taste="metalcore-breakdowns"] { --disc-accent: #6b7280; --disc-image: url("../images/genres/metalcore-breakdowns.svg"); }
+.taste-card[data-taste="anime-openings-jpop"] { --disc-accent: #ec4899; --disc-image: url("../images/genres/anime-openings-jpop.svg"); }
+.taste-card[data-taste="house-party-throwbacks"] { --disc-accent: #06b6d4; --disc-image: url("../images/genres/house-party-throwbacks.svg"); }
 
 input[type="text"],
 input[type="url"] {
@@ -547,6 +677,17 @@ video {
   display: grid;
   gap: 1rem;
   padding-left: 3.1rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-right: 0.45rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.timeline::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .timeline::before {
@@ -655,28 +796,56 @@ video {
   font-weight: 600;
 }
 
-.nav-clicks {
+.nav-arrows {
   position: fixed;
-  left: 50%;
-  bottom: 1rem;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.7rem;
-  z-index: 20;
-  padding: 0.45rem;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.nav-arrows.is-idle .nav-arrow {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.92);
+  pointer-events: none;
+}
+
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 108px;
+  height: 108px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(15, 42, 77, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: rgba(8, 20, 38, 0.42);
+  color: #ffffff;
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
   backdrop-filter: blur(8px);
+  box-shadow: 0 0 34px rgba(255, 255, 255, 0.34);
+  transition: opacity 260ms ease, transform 260ms ease, box-shadow 220ms ease;
 }
 
-.nav-clicks .btn {
-  min-width: 92px;
+.nav-arrow:hover {
+  transform: translateY(-50%) scale(1.06);
+  box-shadow: 0 0 34px rgba(255, 255, 255, 0.46);
 }
 
-.nav-clicks .btn:disabled {
-  opacity: 0.45;
+.nav-arrow:disabled {
+  opacity: 0.22;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.nav-arrow-left {
+  left: calc(2.1rem + 54px);
+}
+
+.nav-arrow-right {
+  right: calc(2.1rem + 54px);
 }
 
 @keyframes ombreShift {
@@ -746,7 +915,7 @@ video {
   }
 
   .taste-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .site-header .container,
