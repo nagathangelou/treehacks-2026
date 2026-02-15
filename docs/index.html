@@ -5,83 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Demo website for a mobile app project."
+      content="Serenity: adaptive soundtrack demo for immersive experiences."
     />
-    <title>App Demo | TreeHacks 2026</title>
+    <title>Serenity | Adaptive Soundtrack Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
   <body>
+    <div class="background-glow" aria-hidden="true"></div>
+
     <header class="site-header">
       <div class="container">
-        <a class="logo" href="./">AppDemo</a>
-        <nav aria-label="Main navigation">
-          <a href="#features">Features</a>
-          <a href="#screens">Screens</a>
-          <a href="#contact">Contact</a>
-        </nav>
+        <a class="logo" href="./">Serenity</a>
+        <div class="status-pill" id="statusPill">Demo window: 02:00</div>
       </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="container hero-layout">
-          <div>
-            <p class="eyebrow">TreeHacks 2026</p>
-            <h1>Show your mobile app with a clean, fast landing page.</h1>
-            <p>
-              This starter site is GitHub Pages-ready and easy to edit. Replace
-              this copy with your app's story, value proposition, and demo link.
-            </p>
-            <div class="hero-actions">
-              <a class="btn btn-primary" href="#">Watch Demo</a>
-              <a class="btn btn-secondary" href="#features">Explore Features</a>
-            </div>
-          </div>
-          <div class="phone-mock" aria-hidden="true">
-            <div class="phone-screen">
-              <p>App Screen Preview</p>
-            </div>
-          </div>
-        </div>
+    <main class="container app-shell">
+      <section class="hero-panel">
+        <p class="eyebrow">TreeHacks 2026</p>
+        <h1>Your life, scored in real time.</h1>
+        <p>
+          Serenity captures taste, watches context, then builds a personalized
+          soundtrack timeline tied to moments and moods.
+        </p>
       </section>
 
-      <section id="features" class="section">
-        <div class="container">
-          <h2>Core Features</h2>
-          <div class="grid-3">
-            <article class="card">
-              <h3>Fast Onboarding</h3>
-              <p>Highlight the first-run experience and why people keep using your app.</p>
-            </article>
-            <article class="card">
-              <h3>Live Insights</h3>
-              <p>Show key metrics, dashboards, or progress summaries users care about.</p>
-            </article>
-            <article class="card">
-              <h3>Smart Notifications</h3>
-              <p>Explain timely reminders and personalization in a concise way.</p>
-            </article>
+      <nav class="tabs" aria-label="Demo steps">
+        <button class="tab active" id="tab-setup" type="button">1. Setup</button>
+        <button class="tab" id="tab-video" type="button">2. Video Context</button>
+        <button class="tab" id="tab-timeline" type="button">3. Timeline</button>
+      </nav>
+
+      <section class="panel" id="setupStep" aria-labelledby="tab-setup">
+        <h2>Setup in under 30 seconds</h2>
+        <p class="helper">Name the demo user and capture music preferences.</p>
+
+        <form id="setupForm" class="setup-form">
+          <label>
+            Demo user name
+            <input
+              type="text"
+              id="userName"
+              name="userName"
+              placeholder="e.g. Maya Chen"
+              required
+            />
+          </label>
+
+          <fieldset>
+            <legend>Music taste capture</legend>
+            <label class="option">
+              <input type="radio" name="captureMethod" value="spotify" checked />
+              Connect via Spotify link
+            </label>
+            <label class="option">
+              <input type="radio" name="captureMethod" value="questions" />
+              Quick yes/no taste questions
+            </label>
+          </fieldset>
+
+          <div id="spotifyBlock">
+            <label>
+              Spotify profile or playlist link
+              <input
+                type="url"
+                id="spotifyLink"
+                name="spotifyLink"
+                placeholder="https://open.spotify.com/..."
+              />
+            </label>
           </div>
-        </div>
+
+          <div id="questionBlock" class="hidden">
+            <p class="question-title">Rapid taste questions</p>
+            <label class="option">
+              <input type="checkbox" name="taste" value="cinematic" />
+              I like cinematic / ambient soundscapes.
+            </label>
+            <label class="option">
+              <input type="checkbox" name="taste" value="energetic" />
+              I prefer energetic, high-tempo songs.
+            </label>
+            <label class="option">
+              <input type="checkbox" name="taste" value="lyrics" />
+              I want clear lyrics over instrumental focus.
+            </label>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Continue to Video</button>
+          <p id="setupMessage" class="form-message" role="status"></p>
+        </form>
       </section>
 
-      <section id="screens" class="section muted">
-        <div class="container">
-          <h2>Product Screens</h2>
-          <p>Add screenshots to <code>docs/assets/images/</code> and link them here.</p>
-          <div class="grid-3">
-            <div class="screen-placeholder">Home</div>
-            <div class="screen-placeholder">Activity</div>
-            <div class="screen-placeholder">Profile</div>
-          </div>
+      <section class="panel hidden" id="videoStep" aria-labelledby="tab-video">
+        <h2>Context video + live generation</h2>
+        <p class="helper">
+          Start the clip. When playback ends, Serenity auto-switches to Timeline.
+        </p>
+
+        <div class="video-frame">
+          <video id="contextVideo" controls preload="metadata">
+            <source src="assets/video/serenity-demo.mp4" type="video/mp4" />
+            Your browser does not support the video element.
+          </video>
         </div>
+
+        <div class="video-actions">
+          <button class="btn btn-primary" id="startVideoBtn" type="button">Play Video</button>
+          <button class="btn btn-secondary" id="skipBtn" type="button">Skip to Timeline</button>
+        </div>
+
+        <p class="pipeline-note">
+          External pipeline status: <span id="pipelineStatus">Waiting for playback...</span>
+        </p>
+      </section>
+
+      <section class="panel hidden" id="timelineStep" aria-labelledby="tab-timeline">
+        <div class="timeline-head">
+          <h2 id="timelineTitle">Timeline</h2>
+          <button class="btn btn-secondary" id="resetBtn" type="button">Run Demo Again</button>
+        </div>
+        <p class="helper">
+          Songs generated by Suno appear as memory snapshots with mood signals.
+        </p>
+
+        <div id="timelineList" class="timeline" aria-live="polite"></div>
       </section>
     </main>
 
-    <footer id="contact" class="site-footer">
+    <footer class="site-footer">
       <div class="container">
-        <p>Built for TreeHacks 2026.</p>
-        <p><a href="pages/privacy.html">Privacy</a></p>
+        <p>Serenity demo website for immersive personalized soundtracks.</p>
+        <a href="pages/privacy.html">Privacy</a>
       </div>
     </footer>
 
